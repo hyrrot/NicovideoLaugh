@@ -1,0 +1,16 @@
+{
+  "name": "NicovideoLaugh",
+  "version": "1.0",
+  "description": "Adds laughing sound like comedy TV programs to Nico Nico Douga movie pages.",
+  "content_scripts": [
+    {
+      "matches": ["http://www.nicovideo.jp/watch/*"],
+      "js": ["myscript.js"],
+      "run_at" : "document_idle"
+    }
+  ],
+  "permissions": [
+    "tabs",
+    "http://www.nicovideo.jp/watch/*"
+  ]
+}
