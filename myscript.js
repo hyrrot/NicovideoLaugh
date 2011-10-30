@@ -1,5 +1,5 @@
-function countW(str){
-	var pattern = "wｗWＷ";
+
+function countChar(str, pattern){
 	var count = 0;
 	for(var i = 0; i < str.length; i++){
 		for(var j = 0; j < pattern.length; j++){
@@ -21,7 +21,7 @@ function groupComments(playerComments, seconds){
 		var commentMessage = playerComments[i].message;
 		var commentPos = playerComments[i].vpos;
 		var idx = Math.floor(commentPos / 1000);
-		result[idx] += countW(commentMessage);
+		result[idx] += countChar(commentMessage, "wWｗＷ");
 	}
 	return result;
 }
@@ -42,6 +42,13 @@ var laughSounds = [
 	new Audio(chrome.extension.getURL("sound/people-laughing-1.ogg"))
 ];
 
+var applauseSounds = [
+	new Audio(chrome.extension.getURL("sound/applause-1.ogg")),
+	new Audio(chrome.extension.getURL("sound/applause-2.ogg")),
+	new Audio(chrome.extension.getURL("sound/applause-3.ogg")),
+	new Audio(chrome.extension.getURL("sound/applause-4.ogg"))
+];
+
 var laughSoundThresholds = [40, 30, 20, 10];
 
 // play correct laughing sound regarding to the count of comments
@@ -54,27 +61,46 @@ function playSound(count){
 	}
 }
 
+function getAllComments(player){
+	var a = new Array();
+	for(var i = 0; i < 5; i++){
+		try{
+			a = a.concat(player.ext_getComments(i));
+		}catch(e){
+			console.log(e);
+		}
+	}
+	return a;
+}
 
 var button = document.getElementById("button_fire_applause");
-
 
 button.onclick = function(){
 	var player = document.getElementById("flvplayer");
 	var mainThreadId;
-	var getThreadInfo = function(p){
+	
+	var w = eval("window");
+	var comments;
+	w['getThreadInfo'] = function(p){
 		p = JSON.parse(p);
+		console.log(p);
+		alert(p);
 		for(var i = 0; i< p.length; i++)
 			if(p[i].type = 'main') mainThreadId=i;
 	};
-	player.ext_getThreads('getThreadInfo');
-	if(isNaN(mainThreadId)) console.log('error: could not get threadid.');
-	var comments = player.ext_getComments(mainThreadId); // Standard comments
-	var seconds = player.ext_getTotalTime();
+	w.getComments = function(c){
+		console.log(c);
+		comments = c;
+	};
+	
+	comments = getAllComments(player); // Standard comments
+	//player.ext_getComments("getComments");
+	var seconds = Math.floor(player.ext_getTotalTime());
 	var wArray = groupComments(comments, seconds);
 	var laugh = function(){
 		var offset = 1;
 		if(player.ext_getStatus() != "playing") return;
-		var currentTime = (player.ext_getPlayheadTime() + 2) % wArray.length;
+		var currentTime = (Math.floor(player.ext_getPlayheadTime()) + 2) % wArray.length;
 		var count = wArray[currentTime];
 		playSound(count);
 		button.innerText = count;
