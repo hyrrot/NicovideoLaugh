@@ -29,7 +29,7 @@ function groupComments(playerComments, seconds){
 
 
 var f = document.getElementById("WATCHFOOTER");
-var wound = document.getElementById("nicommons");
+var wound = document.getElementsByClassName("videoDetailExpand")[0];
 var html = (wound.innerHTML == null) ? '' : wound.innerHTML;
 html += '<button id="button_fire_applause">ｗ</button>';
 //html += '<span id="label_cmcount" style="font-size : 8pt">0</span>';
@@ -76,7 +76,7 @@ function getAllComments(player){
 var button = document.getElementById("button_fire_applause");
 
 button.onclick = function(){
-	var player = document.getElementById("flvplayer");
+	var player = document.getElementById("external_nicoplayer");
 	var mainThreadId;
 	
 	var w = eval("window");
@@ -110,5 +110,3 @@ button.onclick = function(){
 	button.disabled = true;
 //	alert(player.ext_getPlayheadTime());
 };
-
-
